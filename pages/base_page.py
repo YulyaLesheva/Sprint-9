@@ -57,6 +57,26 @@ class BasePage:
         with allure.step(f"Ожидание кликабельности элемента: {locator}"):
             return self.wait.until(EC.element_to_be_clickable(locator))
 
+    def wait_for_text_to_be_present(self, locator, text, timeout=30):
+        with allure.step(f"Ожидание появления текста '{text}' в элементе: {locator}"):
+            wait = WebDriverWait(self.driver, timeout)
+            return wait.until(EC.text_to_be_present_in_element(locator, text))
+
+    def wait_for_text_change(self, locator, old_text, timeout=30):
+        with allure.step(f"Ожидание изменения текста в элементе: {locator}"):
+            wait = WebDriverWait(self.driver, timeout)
+            return wait.until(lambda driver: self.get_text(locator) != old_text)
+
+    def wait_for_element_to_disappear(self, locator, timeout=30):
+        with allure.step(f"Ожидание исчезновения элемента: {locator}"):
+            wait = WebDriverWait(self.driver, timeout)
+            return wait.until(EC.invisibility_of_element_located(locator))
+
+    def wait_for_custom_condition(self, condition, timeout=30):
+        with allure.step(f"Ожидание выполнения пользовательского условия"):
+            wait = WebDriverWait(self.driver, timeout)
+            return wait.until(condition)
+
     def get_text(self, locator):
         with allure.step(f"Получение текста элемента: {locator}"):
             element = self.wait.until(EC.visibility_of_element_located(locator))
